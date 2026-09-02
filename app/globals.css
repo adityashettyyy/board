@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  height: 100%;
+  background: #f2f1ec;
+  overscroll-behavior: none;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Visible keyboard focus everywhere, not just the canvas. */
+:focus-visible {
+  outline: 2px solid #1c6e8c;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline-offset: 3px;
+}
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Faint dot grid — a real drafting-paper cue for the canvas surface, not a
+   decorative illustration. Kept extremely subtle so it never competes with
+   drawn content. */
+.paper-grid {
+  background-image: radial-gradient(circle, #dedcd2 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Respect prefers-reduced-motion: kill non-essential animation/transition. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
