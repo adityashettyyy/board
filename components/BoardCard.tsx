@@ -7,7 +7,13 @@ import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { relativeTime } from "@/lib/relative-time";
 import type { Board } from "@/lib/types";
 
-export default function BoardCard({ board }: { board: Board }) {
+export default function BoardCard({
+  board,
+  isOwner,
+}: {
+  board: Board;
+  isOwner: boolean;
+}) {
   const router = useRouter();
   const [name, setName] = useState(board.name);
   const [editing, setEditing] = useState(false);
@@ -133,6 +139,7 @@ export default function BoardCard({ board }: { board: Board }) {
               onClick={() => setConfirmingDelete(true)}
               aria-label="Delete board"
               className="flex h-6 w-6 items-center justify-center rounded text-ink-soft hover:bg-red-50 hover:text-red-600"
+              hidden={!isOwner}
             >
               <Trash2 size={13} />
             </button>
