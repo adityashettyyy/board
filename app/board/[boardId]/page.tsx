@@ -13,22 +13,39 @@ export default async function BoardPage({
   if (!userId) redirect("/");
 
   const supabase = supabaseServer();
-  const { data: membership } = await supabase
+
+  // The board must actually exist before we let anyone join it.
+  const { data: board } = await supabase
+    .from("boards")
+    .select("*")
+    .eq("id", params.boardId)
+    .maybeSingle();
+
+  if (!board) redirect("/");
+
+  const { data: existingMembership } = await supabase
     .from("board_members")
     .select("role")
     .eq("board_id", params.boardId)
     .eq("user_id", userId)
     .maybeSingle();
 
-  if (!membership) redirect("/");
+  let role = existingMembership?.role as "owner" | "editor" | "viewer" | undefined;
 
-  const { data: board } = await supabase
-    .from("boards")
-    .select("*")
-    .eq("id", params.boardId)
-    .single();
+  // "Copy link" only means something if opening that link actually grants
+  // access. A signed-in user hitting a valid board id for the first time
+  // joins automatically as an editor — the standard "anyone with the link
+  // can edit" model this app's sharing flow is built around.
+  if (!role) {
+    const { data: newMembership, error } = await supabase
+      .from("board_members")
+      .insert({ board_id: params.boardId, user_id: userId, role: "editor" })
+      .select("role")
+      .single();
 
-  if (!board) redirect("/");
+    if (error || !newMembership) redirect("/");
+    role = newMembership.role as "editor";
+  }
 
   const user = await currentUser();
   const name =
@@ -38,7 +55,7 @@ export default async function BoardPage({
     <BoardRoom
       boardId={params.boardId}
       boardName={board.name}
-      role={membership.role as "owner" | "editor" | "viewer"}
+      role={role}
       userName={name}
       userColor={colorForUserId(userId)}
     />
