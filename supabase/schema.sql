@@ -17,8 +17,10 @@ create table if not exists board_members (
   primary key (board_id, user_id)
 );
 
+-- Element ids are generated client-side with nanoid(), not Postgres —
+-- must be `text`, not `uuid`, or every insert/upsert from the app fails.
 create table if not exists board_elements (
-  id uuid primary key default gen_random_uuid(),
+  id text primary key,
   board_id uuid not null references boards (id) on delete cascade,
   type text not null check (type in ('path', 'rectangle', 'ellipse', 'arrow', 'line', 'text')),
   data jsonb not null,
