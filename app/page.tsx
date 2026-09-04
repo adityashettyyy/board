@@ -106,7 +106,7 @@ export default async function HomePage() {
         ) : (
           <ul className="divide-y divide-ink-faint/30 border-t border-ink-faint/30">
             {boards.map((board) => (
-              <BoardCard key={board.id} board={board} />
+              <BoardCard key={board.id} board={board} isOwner={board.ownerId === userId} />
             ))}
           </ul>
         )}
