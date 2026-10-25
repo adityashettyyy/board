@@ -1,109 +1,176 @@
-# Board — Real-Time Collaborative Whiteboard
+# Board – Real-Time Collaborative Whiteboard
 
-[![CI](https://github.com/adityashettyyy/board/actions/workflows/ci.yml/badge.svg)](https://github.com/adityashettyyy/board/actions/workflows/ci.yml)
+A full-stack **real-time collaborative whiteboard** where multiple people draw on the same canvas at the same time. Board supports live cursors, shareable links with edit or view-only access, and auto-saved boards that persist after everyone leaves.
 
-A full-stack whiteboard where multiple people draw on the same canvas at the same time, with live cursors, shareable links and per-board access control. Boards persist to Postgres, so they survive everyone leaving the room.
-
-**Live demo:** _add your Vercel URL here_
-
-<!-- Add a screenshot or GIF: ![Board demo](docs/demo.gif) -->
+---
 
 ## Features
 
-- Real-time multi-user editing with live cursors and presence avatars
-- Pen, rectangle, ellipse, arrow, line, text and eraser tools
-- Select, drag and delete elements; inline text editing (double-click)
-- Per-user undo / redo
-- Zoom (pinch / Ctrl + wheel), pan (scroll or hold Space)
-- Auto-save to Postgres with a save-status indicator; board thumbnails on the dashboard
-- **Sharing with roles:** the owner decides whether the link grants edit or view-only access
-- Export the full board as PNG
-- Keyboard shortcuts: `V` select · `P` pen · `R` rectangle · `O` ellipse · `A` arrow · `L` line · `T` text · `E` eraser · `⌘/Ctrl+Z` undo · `⌘/Ctrl+Shift+Z` redo · `Delete` remove
+* Real-time multi-user collaboration
+* Live cursors and user presence
+* Pen, rectangle, ellipse, arrow, line, text and eraser tools
+* Drag, select and delete canvas elements
+* Inline text editing
+* Per-user undo and redo
+* Zoom and pan controls
+* Auto-save to PostgreSQL with save status
+* Shareable board links with edit or view-only access
+* Board thumbnails on the dashboard
+* Export boards as PNG
+* Keyboard shortcuts
 
-## Tech stack
+---
 
-| Concern | Choice |
-| --- | --- |
-| Framework | Next.js 14 (App Router), React 18, TypeScript |
-| Styling | Tailwind CSS |
-| Canvas | Konva / react-konva |
-| Realtime | Liveblocks (Storage + Presence) |
-| Auth | Clerk |
-| Database | Supabase Postgres + Storage |
-| CI / Hosting | GitHub Actions / Vercel |
+## Tech Stack
 
-## Architecture
+* **Frontend:** Next.js 14, React, TypeScript, Tailwind CSS
+* **Canvas:** Konva, react-konva
+* **Real-Time:** Liveblocks (Storage and Presence)
+* **Authentication:** Clerk
+* **Database:** PostgreSQL via Supabase
+* **CI:** GitHub Actions
+
+---
+
+## How It Works
 
 ```text
-Browser (React + Konva)
-   │  mutations / cursors
-   ▼
-Liveblocks room ◄──────── /api/liveblocks-auth  (Clerk session + board membership
-   │                       check → read-only or full-access token)
-   │ debounced (1.5 s) full snapshot
-   ▼
-/api/boards/:id/elements ──► Supabase Postgres  (source of truth between sessions)
+User Interaction
+      ↓
+React + Konva Canvas
+      ↓
+Liveblocks Room
+      ↓
+Real-Time Sync to Connected Users
+      ↓
+Debounced Auto-Save
+      ↓
+Supabase PostgreSQL
 ```
 
-- **Liveblocks** holds the live state while people are connected; **Postgres** holds the durable copy.
-- When the first person opens a board whose room is empty, the last Postgres snapshot is loaded into the room. Autosave is disabled until that load succeeds, so a failed or slow load can never overwrite a board with an empty one.
-- Every API route authenticates with Clerk and checks `board_members` before reading or writing. Viewers receive read-only Liveblocks tokens and are rejected by the save endpoint.
-- The service-role key is only used in server route handlers; RLS is enabled as defense in depth.
+Liveblocks holds the live state while people are connected, and PostgreSQL stores the durable copy. When a board is opened with an empty room, the last saved snapshot is loaded first, and auto-save stays disabled until that load succeeds. Every API route checks the Clerk session and board membership, and viewers receive read-only room access.
 
-## Run locally
+---
 
-Requirements: Node 18+, and free accounts on Clerk, Liveblocks and Supabase.
+## Getting Started
+
+### Prerequisites
+
+* **Node.js 18+**
+* **npm**
+* Clerk, Liveblocks and Supabase accounts (free tiers work)
+
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/adityashettyyy/board.git
 cd board
-npm install
-cp .env.example .env.local   # then fill in the values
-npm run dev                  # http://localhost:3000
 ```
 
-**Supabase setup**
+### 2. Install Dependencies
 
-1. Create a project and run [`supabase/schema.sql`](supabase/schema.sql) in the SQL editor. (It is safe to re-run on an existing project — it adds the `link_role` column if missing.)
-2. Create a **public** storage bucket named `board-thumbnails`.
+```bash
+npm install
+```
 
-**Environment variables** (see [`.env.example`](.env.example))
+### 3. Configure Environment Variables
 
-| Variable | Where to get it |
-| --- | --- |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY` | Clerk dashboard → API keys |
-| `LIVEBLOCKS_SECRET_KEY` | Liveblocks dashboard → API keys (secret) |
-| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project settings → API |
+Copy `.env.example` to `.env.local` and fill in the values:
 
-## Deploy to Vercel
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
 
-1. Push this repo to GitHub, then **Add New → Project** in Vercel and import it (framework preset: Next.js, no build overrides).
-2. Add every variable from the table above under **Settings → Environment Variables**.
-3. Deploy. In Clerk, add your production domain under **Domains** (and switch to production keys if you use a Clerk production instance).
-4. Open the live URL in two browsers, sign in as two users, and draw — cursors and strokes should appear in both.
+LIVEBLOCKS_SECRET_KEY=
 
-CI (`.github/workflows/ci.yml`) runs typecheck and a production build on every push and pull request.
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+```
 
-## Project structure
+### 4. Configure Supabase
+
+Create a Supabase project and run the contents of:
 
 ```text
-app/
-  api/boards/…          board CRUD, element snapshot save/load, thumbnails
-  api/liveblocks-auth/  issues room tokens based on board role
-  board/[boardId]/      board page (joins the user with the board's link role)
-components/             Canvas, Toolbar, ShareMenu, TopBar, BoardEditor, …
-hooks/                  keyboard shortcuts
-lib/                    types, Liveblocks config, bounds + PNG export, Supabase clients
-supabase/schema.sql     tables, indexes, RLS
+supabase/schema.sql
 ```
 
-## Roadmap
+in the SQL Editor. Then create a public storage bucket named:
 
-- Resize / rotate handles for selected elements
-- Copy, paste, duplicate and z-order controls
-- Member management (promote / remove collaborators)
-- Rate limiting on the save endpoint
+```text
+board-thumbnails
+```
+
+### 5. Start the Development Server
+
+```bash
+npm run dev
+```
+
+The application will run on:
+
+`http://localhost:3000`
+
+---
+
+## How to Use
+
+1. Sign in and create a board.
+2. Pick a tool from the toolbar and draw, or press `T` to add text.
+3. Click **Share**, choose edit or view-only access, and copy the link.
+4. Open the link in another browser to collaborate in real time.
+5. Use undo, redo, zoom and pan as needed.
+6. Export the board as a PNG.
+
+| Key | Action |
+| --- | --- |
+| `V` `P` `R` `O` `A` `L` `T` `E` | Select, pen, rectangle, ellipse, arrow, line, text, eraser |
+| `Ctrl/⌘ + Z` | Undo |
+| `Ctrl/⌘ + Shift + Z` | Redo |
+| `Delete` | Remove selected element |
+| `Space` + drag | Pan |
+
+---
+
+## Project Structure
+
+```text
+board/
+│
+├── app/
+│   ├── api/
+│   │   ├── boards/
+│   │   └── liveblocks-auth/
+│   ├── board/[boardId]/
+│   └── page.tsx
+│
+├── components/
+│   ├── Canvas.tsx
+│   ├── BoardEditor.tsx
+│   ├── Toolbar.tsx
+│   ├── TopBar.tsx
+│   └── ShareMenu.tsx
+│
+├── hooks/
+├── lib/
+│   ├── types.ts
+│   ├── bounds.ts
+│   ├── export-png.ts
+│   ├── liveblocks.config.ts
+│   └── supabase/
+│
+├── supabase/
+│   └── schema.sql
+│
+├── .github/workflows/ci.yml
+├── .env.example
+├── package.json
+└── README.md
+```
+
+---
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT License. See [LICENSE](LICENSE).
