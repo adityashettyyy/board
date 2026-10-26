@@ -2,6 +2,8 @@
 
 A full-stack **real-time collaborative whiteboard** where multiple people draw on the same canvas at the same time. Board supports live cursors, shareable links with edit or view-only access, and auto-saved boards that persist after everyone leaves.
 
+**Live Demo:** (https://chalkroom-aditya.vercel.app)
+
 ---
 
 ## Features
