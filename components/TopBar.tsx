@@ -49,14 +49,14 @@ export default function TopBar({
 
   return (
     <div className="relative z-30 shrink-0">
-      <header className="no-select flex h-12 items-center justify-between gap-2 border-b border-ink-faint/50 bg-surface px-2 sm:px-3">
+      <header className="no-select flex h-12 animate-fade-in items-center justify-between gap-2 border-b border-ink-faint/50 bg-surface px-2 sm:px-3">
         <div className="flex min-w-0 flex-1 items-center gap-1">
           <Link
             href="/"
             aria-label="Back to boards"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-ink-soft transition-colors hover:bg-canvas hover:text-ink"
+            className="group flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-ink-soft transition-colors hover:bg-canvas hover:text-ink active:scale-90"
           >
-            <ArrowLeft size={16} strokeWidth={2} />
+            <ArrowLeft size={16} strokeWidth={2} className="transition-transform duration-300 ease-spring group-hover:-translate-x-0.5" />
           </Link>
 
           <div className="mx-1 hidden h-5 w-px shrink-0 bg-ink-faint/60 sm:block" aria-hidden />
@@ -108,7 +108,7 @@ export default function TopBar({
                   ? "Reconnecting to the live board…"
                   : "Not connected — changes won't sync or save"
               }
-              className="ml-1 flex shrink-0 items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800"
+              className="ml-1 flex shrink-0 animate-pop-in items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800"
             >
               {roomStatus === "reconnecting" ? (
                 <RefreshCw size={11} className="animate-spin" strokeWidth={2.5} />
@@ -129,7 +129,7 @@ export default function TopBar({
                 <div
                   key={connectionId}
                   title={presence.name}
-                  className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-surface text-[10px] font-medium text-white"
+                  className="flex h-6 w-6 animate-pop-in items-center justify-center rounded-full border-2 border-surface text-[10px] font-medium text-white transition-transform duration-200 ease-spring hover:z-10 hover:-translate-y-0.5 hover:scale-110"
                   style={{ backgroundColor: presence.color }}
                 >
                   {presence.name?.[0]?.toUpperCase() ?? "?"}
@@ -148,7 +148,7 @@ export default function TopBar({
       </header>
 
       {saveState === "error" && (
-        <div className="flex items-center justify-center gap-1.5 bg-red-50 px-3 py-1 text-xs text-red-700">
+        <div className="flex animate-fade-in items-center justify-center gap-1.5 bg-red-50 px-3 py-1 text-xs text-red-700">
           <WifiOff size={12} strokeWidth={2.5} />
           Changes aren&apos;t saving — check your connection or try refreshing.
         </div>

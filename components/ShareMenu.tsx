@@ -75,7 +75,7 @@ export default function ShareMenu({
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="flex h-8 items-center gap-1.5 rounded-md border border-ink-faint/60 px-2 text-xs font-medium text-ink transition-colors hover:border-accent hover:text-accent sm:px-2.5"
+        className="press flex h-8 items-center gap-1.5 rounded-md border border-ink-faint/60 px-2 text-xs font-medium text-ink hover:border-accent hover:text-accent sm:px-2.5"
       >
         <Link2 size={13} />
         <span className="hidden sm:inline">Share</span>
@@ -85,7 +85,7 @@ export default function ShareMenu({
         <div
           role="dialog"
           aria-label="Share board"
-          className="absolute right-0 top-10 z-40 w-72 rounded-xl border border-ink-faint/50 bg-surface p-3 shadow-toolbar"
+          className="absolute right-0 top-10 z-40 w-72 origin-top-right animate-pop-in rounded-xl border border-ink-faint/50 bg-surface p-3 shadow-lift"
         >
           <p className="text-sm font-medium text-ink">Share this board</p>
           <p className="mt-0.5 text-xs text-ink-soft">
@@ -103,7 +103,7 @@ export default function ShareMenu({
                   aria-checked={linkRole === role}
                   onClick={() => changeRole(role)}
                   className={clsx(
-                    "rounded-lg border p-2 text-left transition-colors",
+                    "press rounded-lg border p-2 text-left",
                     linkRole === role
                       ? "border-accent bg-accent-soft"
                       : "border-ink-faint/60 hover:bg-canvas"
@@ -127,9 +127,14 @@ export default function ShareMenu({
 
           <button
             onClick={copyLink}
-            className="mt-3 flex h-8 w-full items-center justify-center gap-1.5 rounded-md bg-ink text-xs font-medium text-surface transition-opacity hover:opacity-90"
+            className={clsx(
+              "press mt-3 flex h-8 w-full items-center justify-center gap-1.5 rounded-md text-xs font-medium text-surface transition-colors duration-300",
+              copied ? "bg-presence-moss" : "bg-ink hover:opacity-90"
+            )}
           >
-            {copied ? <Check size={13} /> : <Link2 size={13} />}
+            <span key={copied ? "ok" : "link"} className="flex animate-pop-in">
+              {copied ? <Check size={13} /> : <Link2 size={13} />}
+            </span>
             {copied ? "Link copied" : "Copy link"}
           </button>
         </div>

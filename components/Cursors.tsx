@@ -26,7 +26,7 @@ export default function Cursors({
             className="absolute left-0 top-0 will-change-transform motion-safe:transition-transform motion-safe:duration-[80ms] motion-safe:ease-linear"
             style={{ transform: `translate3d(${screenX}px, ${screenY}px, 0)` }}
           >
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="animate-pop-in drop-shadow-sm">
               <path
                 d="M2 1.5 15 8.5 9 9.5 6 16 2 1.5Z"
                 fill={presence.color}

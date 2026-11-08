@@ -31,7 +31,7 @@ export default function ToolOptions({
 }) {
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-[3.75rem] z-30 flex justify-center px-2 sm:bottom-[4.75rem]">
-      <div className="no-select no-scrollbar pointer-events-auto flex max-w-full items-center gap-2 overflow-x-auto rounded-xl border border-ink-faint/50 bg-surface/95 px-2.5 py-1.5 shadow-toolbar backdrop-blur-sm">
+      <div className="no-select no-scrollbar pointer-events-auto flex max-w-full animate-pop-in items-center gap-2 overflow-x-auto rounded-xl border border-ink-faint/50 bg-surface/95 px-2.5 py-1.5 shadow-lift backdrop-blur-md">
         <div className="flex shrink-0 items-center gap-1">
           {COLORS.map((c) => (
             <button
@@ -40,7 +40,7 @@ export default function ToolOptions({
               aria-pressed={color === c}
               onClick={() => onColorChange(c)}
               className={clsx(
-                "h-5 w-5 shrink-0 rounded-full ring-offset-2 ring-offset-surface transition-shadow",
+                "h-5 w-5 shrink-0 rounded-full ring-offset-2 ring-offset-surface transition-all duration-200 ease-spring hover:scale-125 active:scale-90",
                 color === c && "ring-2 ring-accent"
               )}
               style={{ backgroundColor: c }}
@@ -58,12 +58,12 @@ export default function ToolOptions({
               aria-pressed={strokeWidth === w}
               onClick={() => onStrokeWidthChange(w)}
               className={clsx(
-                "flex h-6 w-6 shrink-0 items-center justify-center rounded-md transition-colors",
+                "press flex h-6 w-6 shrink-0 items-center justify-center rounded-md",
                 strokeWidth === w ? "bg-accent-soft" : "hover:bg-canvas"
               )}
             >
               <span
-                className="rounded-full bg-ink"
+                className="rounded-full bg-ink transition-all duration-200 ease-spring"
                 style={{ width: w, height: w }}
               />
             </button>
@@ -82,7 +82,7 @@ export default function ToolOptions({
                 title="No fill"
                 onClick={() => onFillChange(null)}
                 className={clsx(
-                  "relative h-5 w-5 shrink-0 rounded-full border border-ink-faint bg-transparent transition-shadow",
+                  "relative h-5 w-5 shrink-0 rounded-full border border-ink-faint bg-transparent transition-all duration-200 ease-spring hover:scale-125 active:scale-90",
                   !fill && "ring-2 ring-accent ring-offset-2 ring-offset-surface"
                 )}
               >
@@ -95,7 +95,7 @@ export default function ToolOptions({
                   aria-pressed={fill === f}
                   onClick={() => onFillChange(f)}
                   className={clsx(
-                    "h-5 w-5 shrink-0 rounded-full ring-offset-2 ring-offset-surface transition-shadow",
+                    "h-5 w-5 shrink-0 rounded-full ring-offset-2 ring-offset-surface transition-all duration-200 ease-spring hover:scale-125 active:scale-90",
                     fill === f && "ring-2 ring-accent"
                   )}
                   style={{ backgroundColor: f }}
