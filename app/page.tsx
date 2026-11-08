@@ -75,7 +75,7 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen bg-canvas">
-      <header className="flex h-14 items-center justify-between border-b border-ink-faint/50 bg-surface px-5">
+      <header className="sticky top-0 z-10 flex h-14 animate-fade-in items-center justify-between border-b border-ink-faint/50 bg-surface/80 px-5 backdrop-blur-md">
         <div className="flex items-center gap-2">
           <Logo size={20} />
           <span className="text-sm font-semibold tracking-tight text-ink">Board</span>
@@ -84,13 +84,13 @@ export default async function HomePage() {
       </header>
 
       <div className="mx-auto max-w-2xl px-5 py-12">
-        <div className="mb-5 flex items-baseline justify-between">
+        <div className="mb-5 flex animate-fade-up items-baseline justify-between">
           <h1 className="text-lg font-semibold tracking-tight text-ink">Your boards</h1>
           <NewBoardButton createBoard={createBoard} />
         </div>
 
         {boards.length === 0 ? (
-          <div className="rounded-md border border-dashed border-ink-faint px-4 py-14 text-center">
+          <div className="animate-fade-up rounded-xl border border-dashed border-ink-faint px-4 py-14 text-center transition-colors hover:border-accent/60 hover:bg-surface/60" style={{ animationDelay: "120ms" }}>
             <p className="text-sm text-ink-soft">
               No boards yet. Create one, then press{" "}
               <kbd className="rounded border border-ink-faint/70 bg-canvas px-1 py-0.5 font-mono text-[11px]">
@@ -104,9 +104,14 @@ export default async function HomePage() {
             </p>
           </div>
         ) : (
-          <ul className="divide-y divide-ink-faint/30 border-t border-ink-faint/30">
-            {boards.map((board) => (
-              <BoardCard key={board.id} board={board} isOwner={board.ownerId === userId} />
+          <ul className="stagger divide-y divide-ink-faint/30 border-t border-ink-faint/30">
+            {boards.map((board, i) => (
+              <BoardCard
+                key={board.id}
+                board={board}
+                isOwner={board.ownerId === userId}
+                index={i}
+              />
             ))}
           </ul>
         )}
@@ -117,44 +122,78 @@ export default async function HomePage() {
 
 function SignedOutHero() {
   return (
-    <main className="flex min-h-screen flex-col bg-canvas">
-      <header className="flex h-14 items-center px-5">
+    <main className="relative flex min-h-screen flex-col overflow-hidden bg-canvas">
+      <div className="ambient" aria-hidden>
+        <span className="animate-blob-drift -left-24 top-10 h-80 w-80 bg-accent/40" />
+        <span
+          className="animate-blob-drift -right-20 bottom-0 h-96 w-96 bg-presence-coral/30"
+          style={{ animationDelay: "-6s" }}
+        />
+        <span
+          className="animate-blob-drift left-1/2 top-1/3 h-64 w-64 bg-presence-violet/20"
+          style={{ animationDelay: "-10s" }}
+        />
+      </div>
+
+      <header className="relative z-10 flex h-14 animate-fade-in items-center px-5">
         <div className="flex items-center gap-2">
           <Logo size={20} />
           <span className="text-sm font-semibold tracking-tight text-ink">Board</span>
         </div>
       </header>
 
-      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center gap-10 px-6 py-10 md:flex-row md:gap-16 md:py-0">
+      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col items-center gap-10 px-6 py-10 md:flex-row md:gap-16 md:py-0">
         <div className="max-w-sm text-center md:text-left">
-          <h1 className="text-3xl font-semibold tracking-tight text-ink">
+          <p
+            className="mb-3 inline-flex animate-fade-up items-center gap-1.5 rounded-full border border-ink-faint/60 bg-surface/70 px-2.5 py-1 text-[11px] font-medium text-ink-soft backdrop-blur"
+          >
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-presence-moss opacity-70" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-presence-moss" />
+            </span>
+            Real-time collaboration
+          </p>
+          <h1
+            className="animate-fade-up text-3xl font-semibold tracking-tight text-ink sm:text-4xl"
+            style={{ animationDelay: "80ms" }}
+          >
             A shared surface for thinking together.
           </h1>
-          <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+          <p
+            className="mt-3 animate-fade-up text-sm leading-relaxed text-ink-soft"
+            style={{ animationDelay: "160ms" }}
+          >
             Draw, sketch, and write with your team in real time — no exports,
             no waiting for a sync, just an open board.
           </p>
-          <div className="mt-6">
+          <div className="mt-6 animate-fade-up" style={{ animationDelay: "240ms" }}>
             <SignInButton mode="redirect" forceRedirectUrl="/">
-              <button className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent/90">
+              <button className="press shine rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-toolbar hover:bg-accent/90 hover:shadow-lift">
                 Sign in to start a board
               </button>
             </SignInButton>
           </div>
         </div>
 
-        <HeroSketch />
+        <div className="w-full max-w-md animate-slide-up" style={{ animationDelay: "200ms" }}>
+          <HeroSketch />
+        </div>
       </div>
     </main>
   );
 }
 
-/** A small, hand-built preview of the actual product — not stock hero art. */
+/** A small, hand-built preview of the actual product — strokes draw themselves, cursors drift. */
 function HeroSketch() {
+  const draw = (delay: number, length: number) => ({
+    strokeDasharray: length,
+    strokeDashoffset: length,
+    animationDelay: `${delay}ms`,
+  });
   return (
     <svg
       viewBox="0 0 360 260"
-      className="w-full max-w-md"
+      className="w-full rounded-xl shadow-lift transition-transform duration-500 ease-smooth hover:-translate-y-1 hover:rotate-[0.4deg]"
       role="img"
       aria-label="Preview of a board with drawn shapes and two collaborators' cursors"
     >
@@ -171,33 +210,52 @@ function HeroSketch() {
         ))
       )}
 
-      <rect x="36" y="146" width="70" height="52" rx="3" fill="none" stroke="#1C6E8C" strokeWidth="2" />
+      <rect
+        x="36"
+        y="146"
+        width="70"
+        height="52"
+        rx="3"
+        fill="none"
+        stroke="#1C6E8C"
+        strokeWidth="2"
+        className="animate-draw-path"
+        style={draw(500, 244)}
+      />
       <path
         d="M140 190 Q 150 130 175 160 T 220 140"
         fill="none"
         stroke="#1C1B19"
         strokeWidth="2.5"
         strokeLinecap="round"
+        className="animate-draw-path"
+        style={draw(1100, 160)}
       />
-      <g transform="translate(240,150)">
-        <rect width="86" height="44" rx="3" fill="#FFFFFF" stroke="#CC9A2E" strokeWidth="1.5" />
-        <rect x="10" y="12" width="50" height="4" rx="2" fill="#B8B6AE" />
-        <rect x="10" y="22" width="34" height="4" rx="2" fill="#B8B6AE" />
+      <g className="animate-fade-in" style={{ animationDelay: "1800ms" }}>
+        <g transform="translate(240,150)">
+          <rect width="86" height="44" rx="3" fill="#FFFFFF" stroke="#CC9A2E" strokeWidth="1.5" />
+          <rect x="10" y="12" width="50" height="4" rx="2" fill="#B8B6AE" />
+          <rect x="10" y="22" width="34" height="4" rx="2" fill="#B8B6AE" />
+        </g>
       </g>
 
       <g transform="translate(210,58)">
-        <path d="M2 1.5 15 8.5 9 9.5 6 16 2 1.5Z" fill="#E8735C" stroke="white" strokeWidth="1" />
-        <rect x="16" y="6" width="42" height="16" rx="8" fill="#E8735C" />
-        <text x="24" y="17" fontSize="9" fill="white" fontFamily="Inter, sans-serif" fontWeight="600">
-          Maya
-        </text>
+        <g className="animate-float-a">
+          <path d="M2 1.5 15 8.5 9 9.5 6 16 2 1.5Z" fill="#E8735C" stroke="white" strokeWidth="1" />
+          <rect x="16" y="6" width="42" height="16" rx="8" fill="#E8735C" />
+          <text x="24" y="17" fontSize="9" fill="white" fontFamily="Inter, sans-serif" fontWeight="600">
+            Maya
+          </text>
+        </g>
       </g>
       <g transform="translate(90,90)">
-        <path d="M2 1.5 15 8.5 9 9.5 6 16 2 1.5Z" fill="#8B5FBF" stroke="white" strokeWidth="1" />
-        <rect x="16" y="6" width="38" height="16" rx="8" fill="#8B5FBF" />
-        <text x="24" y="17" fontSize="9" fill="white" fontFamily="Inter, sans-serif" fontWeight="600">
-          Theo
-        </text>
+        <g className="animate-float-b">
+          <path d="M2 1.5 15 8.5 9 9.5 6 16 2 1.5Z" fill="#8B5FBF" stroke="white" strokeWidth="1" />
+          <rect x="16" y="6" width="38" height="16" rx="8" fill="#8B5FBF" />
+          <text x="24" y="17" fontSize="9" fill="white" fontFamily="Inter, sans-serif" fontWeight="600">
+            Theo
+          </text>
+        </g>
       </g>
     </svg>
   );

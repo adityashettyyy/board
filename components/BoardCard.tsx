@@ -10,9 +10,11 @@ import type { Board } from "@/lib/types";
 export default function BoardCard({
   board,
   isOwner,
+  index = 0,
 }: {
   board: Board;
   isOwner: boolean;
+  index?: number;
 }) {
   const router = useRouter();
   const [name, setName] = useState(board.name);
@@ -59,16 +61,19 @@ export default function BoardCard({
   }
 
   return (
-    <li className="group relative">
+    <li
+      className="group relative"
+      style={{ animationDelay: `${Math.min(index, 8) * 60}ms` }}
+    >
       <Link
         href={`/board/${board.id}`}
         onClick={(e) => {
           if (editing || menuOpen) e.preventDefault();
         }}
-        className="flex items-center gap-3 rounded-md border border-transparent px-3 py-2.5 transition-colors hover:border-ink-faint/60 hover:bg-surface"
+        className="flex items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 transition-all duration-300 ease-smooth hover:-translate-y-0.5 hover:border-ink-faint/60 hover:bg-surface hover:shadow-lift active:scale-[0.99]"
       >
         <div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded overflow-hidden text-xs font-semibold text-white"
+          className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md text-xs font-semibold text-white transition-transform duration-300 ease-spring group-hover:scale-110 group-hover:-rotate-3"
           style={{ backgroundColor: colorFromId(board.id) }}
         >
           {board.thumbnailUrl ? (
@@ -106,7 +111,7 @@ export default function BoardCard({
 
       <div className="absolute right-2 top-1/2 -translate-y-1/2">
         {confirmingDelete ? (
-          <div className="flex items-center gap-1.5 rounded-md border border-ink-faint/60 bg-surface px-2 py-1 shadow-sm">
+          <div className="flex animate-pop-in items-center gap-1.5 rounded-md border border-ink-faint/60 bg-surface px-2 py-1 shadow-sm">
             <span className="text-xs text-ink-soft">Delete?</span>
             <button
               disabled={busy}
@@ -123,7 +128,7 @@ export default function BoardCard({
             </button>
           </div>
         ) : menuOpen ? (
-          <div ref={menuRef} className="flex items-center gap-1 rounded-md border border-ink-faint/60 bg-surface p-1 shadow-sm">
+          <div ref={menuRef} className="flex animate-pop-in items-center gap-1 rounded-md border border-ink-faint/60 bg-surface p-1 shadow-sm">
             <button
               onClick={() => {
                 setMenuOpen(false);
@@ -148,7 +153,7 @@ export default function BoardCard({
           <button
             onClick={() => setMenuOpen(true)}
             aria-label="Board options"
-            className="flex h-7 w-7 items-center justify-center rounded-md text-ink-soft opacity-0 transition-opacity hover:bg-canvas hover:text-ink focus-visible:opacity-100 group-hover:opacity-100"
+            className="press flex h-7 w-7 items-center justify-center rounded-md text-ink-soft opacity-0 hover:bg-canvas hover:text-ink focus-visible:opacity-100 group-hover:opacity-100 max-sm:opacity-100"
           >
             <MoreHorizontal size={15} />
           </button>

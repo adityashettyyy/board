@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 
 export default function NewBoardButton({
   createBoard,
@@ -24,13 +24,21 @@ export default function NewBoardButton({
       <button
         onClick={handleClick}
         disabled={isPending}
-        className="flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent/90 disabled:opacity-60"
+        className="press shine group flex items-center gap-1.5 rounded-lg bg-accent px-3.5 py-1.5 text-sm font-medium text-white shadow-toolbar hover:bg-accent/90 hover:shadow-lift disabled:opacity-60"
       >
-        <Plus size={16} strokeWidth={2.25} />
+        {isPending ? (
+          <Loader2 size={16} strokeWidth={2.25} className="animate-spin" />
+        ) : (
+          <Plus
+            size={16}
+            strokeWidth={2.25}
+            className="transition-transform duration-300 ease-spring group-hover:rotate-90"
+          />
+        )}
         {isPending ? "Creating…" : "New board"}
       </button>
       {error && (
-        <p role="alert" className="max-w-xs text-right text-xs text-red-600">
+        <p role="alert" className="max-w-xs animate-pop-in text-right text-xs text-red-600">
           {error}
         </p>
       )}
